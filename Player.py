@@ -1,20 +1,34 @@
-from typing import Optional
 from socket import socket as Socket
 
 
 class Player:
     socket: Socket
     adres: str
+    request: str | None
+
     color: str
-    request: Optional[str]
+    wasRokirovka: bool
     score: int
 
     def __init__(self,
-                 client_socket: Socket,
-                 client_adres: str,
+                 clientSocket: Socket,
+                 clientAdres: str,
                  color: str) -> None:
-        self.socket = client_socket
-        self.adres = client_adres
-        self.color = color
+        self.socket = clientSocket
+        self.adres = clientAdres
         self.request = None
+        self.color = color
+        self.wasRokirovka = False
         self.score = 0
+
+    def __repr__(self) -> str:
+        color: str
+        if self.color == "w":
+            color = "белый"
+        else:
+            color = "чёрный"
+        return f"{color} игрок {self.adres}"
+
+    def toJson(self) -> dict[str, str]:
+        return {"adr": self.adres,
+                "color": self.color}

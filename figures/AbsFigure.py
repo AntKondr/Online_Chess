@@ -1,9 +1,6 @@
-from typing import Optional
-
-
 class AbsFigure:
-    _NAME: Optional[str] = None
     _ALOWED_COLORS: tuple[str, str] = ("w", "b")
+    _NAME: str | None = None
     color: str
     y: int
     x: int
@@ -15,15 +12,15 @@ class AbsFigure:
             return super().__new__(cls)
 
     def __init__(self, color: str, y: int, x: int) -> None:
-        if color in self._ALOWED_COLORS:
+        if color in AbsFigure._ALOWED_COLORS:
             self.color = color
         else:
             raise Exception(f"Invalid color: {color}")
         self.y = y
         self.x = x
 
-    def __str__(self) -> str:
-        return f"{self._NAME}{self.color}"
-
     def __repr__(self) -> str:
         return f"{self._NAME}{self.color}"
+
+    def toJson(self) -> dict[str, str | int | bool]:
+        raise NotImplementedError
