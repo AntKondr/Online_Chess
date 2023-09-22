@@ -8,12 +8,12 @@ from socket import AF_INET, SOCK_STREAM, IPPROTO_TCP, TCP_NODELAY
 
 
 system("cls")
-ALLOWED_IP: tuple[str, ...] = ('127.0.0.1', '192.168.43.201', '192.168.1.107')
+ALLOWED_IP: tuple[str, ...] = ("127.0.0.1", "192.168.43.201", "192.168.1.107", "93.183.72.52")
 serverSocket: Socket
 
 serverSocket = Socket(AF_INET, SOCK_STREAM)
 serverSocket.setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
-serverSocket.bind((ALLOWED_IP[0], 8000))
+serverSocket.bind((ALLOWED_IP[-1], 8000))
 serverSocket.setblocking(False)
 serverSocket.listen()
 print('Chess server started\n')

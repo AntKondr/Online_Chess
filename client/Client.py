@@ -5,12 +5,12 @@ from os import system
 
 
 system("cls")
-ALLOWED_IP: list[str] = ['127.0.0.1', '192.168.43.201', '192.168.1.107']
+ALLOWED_IP: tuple[str, ...] = ("127.0.0.1", "192.168.43.201", "192.168.1.107", "93.183.72.52")
 
 clientSocket: Socket
 clientSocket = Socket(AF_INET, SOCK_STREAM)
 clientSocket.setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
-clientSocket.connect((ALLOWED_IP[0], 8000))
+clientSocket.connect((ALLOWED_IP[-1], 8000))
 
 gameStrRepr: str
 iAmActive: bool = False
