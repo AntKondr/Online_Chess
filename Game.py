@@ -1,34 +1,47 @@
 from json import dumps
-from os import system
 from random import randint
 from Player import Player
 from Board import Board
 
 
 class Game:
-    id: int
-    whitePlayer: Player
-    blackPlayer: Player
-
-    activePlayer: Player
-    board: Board
-    delay: int
-
     def __init__(self,
                  whitePlayer: Player,
                  blackPlayer: Player,
-                 id: int
-                 ) -> None:
+                 id: int) -> None:
+        self.id: int
+        self.whitePlayer: Player
+        self.blackPlayer: Player
+        self.activePlayer: Player
+        self.unActivePlayer: Player
+        self.board: Board
+        self.delay: int
+
+        self.id = id
         self.whitePlayer = whitePlayer
         self.blackPlayer = blackPlayer
-        self.id = id
-
         self.board = Board()
         self.delay = 0
         if randint(0, 1) == 0:
             self.activePlayer = self.whitePlayer
+            self.unActivePlayer = self.blackPlayer
         else:
             self.activePlayer = self.blackPlayer
+            self.unActivePlayer = self.whitePlayer
+
+    def doHod(self) -> None:
+        self.board.calcFigsState()
+        self.activePlayer.doHod(self.board)
+        self.changeActivePlayer()
+        self.board.clearFigsState()
+
+    def changeActivePlayer(self) -> None:
+        if self.activePlayer is self.whitePlayer:
+            self.activePlayer = self.blackPlayer
+            self.unActivePlayer = self.whitePlayer
+        else:
+            self.activePlayer = self.whitePlayer
+            self.unActivePlayer = self.blackPlayer
 
     def toJson(self) -> str:
         d = {"id": self.id,
@@ -38,20 +51,11 @@ class Game:
              "board": self.board.toJson()}
         return dumps(d, indent=4)
 
-    # TODO
-    def get_starts_parameters(self) -> str:
-        return "pass"
-
-    def show_in_console(self) -> None:
-        rotate180: bool
-        if self.activePlayer.color == "w":
-            rotate180 = True
-        else:
-            rotate180 = False
+    def getStrRepr(self, color: str) -> str:
         field = self.board.getField()
         divider: str = "\n   -------------------------------------------------\n"
         out: str = f"Ходит {self.activePlayer}!\n\n"
-        if rotate180:
+        if color == "w":
             charsW: str = "      a     b     c     d     e     f     g     h"
             out += (charsW + divider)
             for row in range(7, -1, -1):
@@ -75,5 +79,4 @@ class Game:
                     out += f"{item} | "
                 out += f" {row + 1}{divider}"
             out += charsB + "\n"
-        system("cls")
-        print(out)
+        return out

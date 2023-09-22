@@ -11,9 +11,9 @@ class Board:
     __XCOLS: dict[str, int] = {"a": 7, "b": 6, "c": 5, "d": 4, "e": 3, "f": 2, "g": 1, "h": 0}
 # {7: "a", 6: "b", 5: "c", 4: "d", 3: "e", 2: "f", 1: "g", 0: "h"}
 
-    __field: list[list[AbsFigure | None]]
-
     def __init__(self) -> None:
+        self.__field: list[list[AbsFigure | None]]
+
         self.__field = [[Rook("w", 0, 0), Knight("w", 0, 1), Bishop("w", 0, 2), King("w", 0, 3), Queen("w", 0, 4), Bishop("w", 0, 5), Knight("w", 0, 6), Rook("w", 0, 7)],
                         [Pawn("w", 1, 0), Pawn("w", 1, 1), Pawn("w", 1, 2), Pawn("w", 1, 3), Pawn("w", 1, 4), Pawn("w", 1, 5), Pawn("w", 1, 6), Pawn("w", 1, 7)],
                         [None, None, None, None, None, None, None, None],
@@ -23,18 +23,58 @@ class Board:
                         [Pawn("b", 6, 0), Pawn("b", 6, 1), Pawn("b", 6, 2), Pawn("b", 6, 3), Pawn("b", 6, 4), Pawn("b", 6, 5), Pawn("b", 6, 6), Pawn("b", 6, 7)],
                         [Rook("b", 7, 0), Knight("b", 7, 1), Bishop("b", 7, 2), King("b", 7, 3), Queen("b", 7, 4), Bishop("b", 7, 5), Knight("b", 7, 6), Rook("b", 7, 7)]]
 
+    def moveFigure(self, coordsF: str, coordsT: str) -> bool:
+        fig: AbsFigure | None
+
+        xF: int = Board.__XCOLS[coordsF[0]]
+        yF: int = int(coordsF[1]) - 1
+
+        xT: int = Board.__XCOLS[coordsT[0]]
+        yT: int = int(coordsT[1]) - 1
+
+        fig = self.__field[yF][xF]
+
+        if not (fig is None) and (yT, xT) in fig.getAvblCellsForMove() + fig.getAvblCellsForEat():
+            self.__field[yT][xT] = self.__field[yF][xF]
+            self.__field[yF][xF] = None
+            fig.setNewCoords(yT, xT)
+            return True
+        return False
+
+    def clearFigsState(self) -> None:
+        for row in self.__field:
+            for fig in row:
+                if not (fig is None):
+                    fig.resetState()
+
+    def calcFigsState(self) -> None:
+        for row in self.__field:
+            for fig in row:
+                if not (fig is None):
+                    fig.calcAvblCells(self.__field)
+
     def getFigure(self, coords: str) -> AbsFigure | None:
         # coords = f8
-        x: int = self.__XCOLS[coords[0]]
+        x: int = Board.__XCOLS[coords[0]]
         y: int = int(coords[1]) - 1
         return self.__field[y][x]
+
+    def checkCoords(self, coords: str, color: str) -> bool:
+        fig: AbsFigure | None
+
+        x: int = Board.__XCOLS[coords[0]]
+        y: int = int(coords[1]) - 1
+        fig = self.__field[y][x]
+        if (fig is None) or (fig.getColor() != color) or (len(fig.getAvblCellsForMove() + fig.getAvblCellsForEat()) == 0):
+            return False
+        return True
 
     def getField(self) -> list[list[AbsFigure | None]]:
         return self.__field
 
-    def toJson(self) -> list[list[dict[str, str | int] | None]]:
-        tmp: list[dict[str, str | int] | None]
-        res: list[list[dict[str, str | int] | None]]
+    def toJson(self) -> list[list[dict[str, str | int | bool] | None]]:
+        tmp: list[dict[str, str | int | bool] | None]
+        res: list[list[dict[str, str | int | bool] | None]]
 
         res = []
         for row in self.__field:

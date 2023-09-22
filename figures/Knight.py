@@ -1,6 +1,32 @@
 from .AbsFigure import AbsFigure
+from .King import King
 
 
 class Knight(AbsFigure):
     # конь: knight
     _NAME: str = "кн"
+    __MOVES: tuple[tuple[int, int], ...] = ((-2, -1), (-2, 1), (-1, 2), (1, 2), (2, 1), (2, -1), (1, -2), (-1, -2))
+
+    def calcAvblCells(self, field: list[list[AbsFigure | None]]) -> None:
+        fig: AbsFigure | None
+        yt: int
+        xt: int
+
+        for yMove, xMove in Knight.__MOVES:
+            yt = self._y + yMove
+            xt = self._x + xMove
+            if (-1 < yt < 8) and (-1 < xt < 8):
+                fig = field[yt][xt]
+                if fig is None:
+                    self._avblCellsForMove.append((yt, xt))
+                else:
+                    if fig._color != self._color:
+                        self._avblCellsForEat.append((yt, xt))
+                        if type(fig) is King:
+                            self._doShah = True
+
+    def toJson(self) -> dict[str, str | int]:
+        return {"name": self._NAME,
+                "color": self._color,
+                "y": self._y,
+                "x": self._x}
