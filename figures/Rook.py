@@ -1,3 +1,4 @@
+from enums import Color
 from .AbsFigure import AbsFigure
 from .King import King
 
@@ -7,7 +8,7 @@ class Rook(AbsFigure):
     _NAME: str = "лд"
     __MOVES: tuple[tuple[int, int], ...] = ((-1, 0), (0, 1), (1, 0), (0, -1))
 
-    def __init__(self, color: str, y: int, x: int) -> None:
+    def __init__(self, color: Color, y: int, x: int) -> None:
         AbsFigure.__init__(self, color, y, x)
 
         self.__wasMoved: bool
@@ -21,6 +22,8 @@ class Rook(AbsFigure):
         if not self.__wasMoved:
             self.__wasMoved = True
 
+    # TODO переписать метод как у Queen
+    # overrided
     def calcAvblCells(self, field: list[list[AbsFigure | None]]) -> None:
         yNextCell: int
         xNextCell: int
@@ -43,11 +46,14 @@ class Rook(AbsFigure):
                                 self._doShah = True
                             break
                         else:
+                            fig._covered = True
                             break
                 else:
                     break
+        self._wasCalc = True
 
-    def toJson(self) -> dict[str, str | int]:
+    # overrided
+    def toJson(self) -> dict[str, str | Color | int]:
         return {"name": self._NAME,
                 "color": self._color,
                 "y": self._y,

@@ -1,3 +1,4 @@
+from enums import Color
 from .AbsFigure import AbsFigure
 from .King import King
 
@@ -7,6 +8,7 @@ class Knight(AbsFigure):
     _NAME: str = "кн"
     __MOVES: tuple[tuple[int, int], ...] = ((-2, -1), (-2, 1), (-1, 2), (1, 2), (2, 1), (2, -1), (1, -2), (-1, -2))
 
+    # overrided
     def calcAvblCells(self, field: list[list[AbsFigure | None]]) -> None:
         fig: AbsFigure | None
         yt: int
@@ -24,8 +26,21 @@ class Knight(AbsFigure):
                         self._avblCellsForEat.append((yt, xt))
                         if type(fig) is King:
                             self._doShah = True
+                            fig.underShah = True
+                            fig.shahAmt += 1
+                    else:
+                        fig._covered = True
+        self._wasCalc = True
 
-    def toJson(self) -> dict[str, str | int]:
+    # overrided
+    def calcAvblCellsIfCoversKing(self,
+                                  field: list[list[AbsFigure | None]],
+                                  directions: tuple[tuple[int, int], tuple[int, int]]
+                                  ) -> None:
+        self._wasCalc = True
+
+    # overrided
+    def toJson(self) -> dict[str, str | Color | int]:
         return {"name": self._NAME,
                 "color": self._color,
                 "y": self._y,

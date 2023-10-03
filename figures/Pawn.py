@@ -1,25 +1,25 @@
+from enums import Color
 from .AbsFigure import AbsFigure
 from .King import King
-from variables import ALOWED_COLORS
 
 
 class Pawn(AbsFigure):
     # пешка: pawn
     _NAME: str = "пш"
 
-    def __init__(self, color: str, y: int, x: int) -> None:
+    def __init__(self, color: Color, y: int, x: int) -> None:
         AbsFigure.__init__(self, color, y, x)
 
-        self.__yMove: int
+        self.__yMove: tuple[int, int]
         self.__eatCells: tuple[tuple[int, int], tuple[int, int]]
         self.__wasMoved: bool
 
         self.__wasMoved = False
-        if color == ALOWED_COLORS[0]:
-            self.__yMove = 1
+        if color == Color.WHITE:
+            self.__yMove = (1, 0)
             self.__eatCells = ((1, -1), (1, 1))
         else:
-            self.__yMove = -1
+            self.__yMove = (-1, 0)
             self.__eatCells = ((-1, -1), (-1, 1))
 
     # overrided
@@ -29,35 +29,79 @@ class Pawn(AbsFigure):
         if not self.__wasMoved:
             self.__wasMoved = True
 
+    # overrided
     def calcAvblCells(self, field: list[list[AbsFigure | None]]) -> None:
+        self.__calcAvblCellsForMove(field)
+        self.__calcAvblCellsForEat(field)
+        self._wasCalc = True
+
+    # overrided
+    def calcAvblCellsIfCoversKing(self,
+                                  field: list[list[AbsFigure | None]],
+                                  directions: tuple[tuple[int, int], tuple[int, int]]
+                                  ) -> None:
+        for dir in directions:
+            if dir == self.__yMove:
+                self.__calcAvblCellsForMove(field)
+            if dir in self.__eatCells:
+                yt = self._y + dir[0]
+                xt = self._x + dir[1]
+                if (-1 < yt < 8) and (-1 < xt < 8):
+                    fig = field[yt][xt]
+                    if not (fig is None):
+                        if fig._color != self._color:
+                            self._avblCellsForEat.append((yt, xt))
+                            if type(fig) is King:
+                                self._doShah = True
+                        else:
+                            fig._covered = True
+        self._wasCalc = True
+
+    def __calcAvblCellsForMove(self, field: list[list[AbsFigure | None]]) -> None:
         yt: int
-        xt: int
-        fig: AbsFigure | None
 
         if self.__wasMoved:
-            yt = self._y + self.__yMove
+            yt = self._y + self.__yMove[0]
             if (-1 < yt < 8) and (field[yt][self._x] is None):
                 self._avblCellsForMove.append((yt, self._x))
         else:
             yt = self._y
             for _ in range(2):
-                yt += self.__yMove
+                yt += self.__yMove[0]
                 if (-1 < yt < 8):
                     if not (field[yt][self._x] is None):
                         break
                     self._avblCellsForMove.append((yt, self._x))
+
+    def __calcAvblCellsForEat(self, field: list[list[AbsFigure | None]]) -> None:
+        yt: int
+        xt: int
+        fig: AbsFigure | None
 
         for ym, xm in self.__eatCells:
             yt = self._y + ym
             xt = self._x + xm
             if (-1 < yt < 8) and (-1 < xt < 8):
                 fig = field[yt][xt]
-                if not (fig is None) and fig._color != self._color:
-                    self._avblCellsForEat.append((yt, xt))
-                    if type(fig) is King:
-                        self._doShah = True
+                if not (fig is None):
+                    if fig._color != self._color:
+                        self._avblCellsForEat.append((yt, xt))
+                        if type(fig) is King:
+                            self._doShah = True
+                    else:
+                        fig._covered = True
 
-    def toJson(self) -> dict[str, str | int | bool]:
+    # overrided
+    def getControlledCells(self) -> list[tuple[int, int]]:
+        result: list[tuple[int, int]] = []
+        for ym, xm in self.__eatCells:
+            yt = self._y + ym
+            xt = self._x + xm
+            result.append((yt, xt))
+        return result
+
+    # overrided
+    def toJson(self) -> dict[str, str | Color | int | bool]:
         return {"code": self._NAME,
                 "color": self._color,
                 "y": self._y,

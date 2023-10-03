@@ -1,32 +1,29 @@
 from socket import socket as Socket
 from Board import Board
-# from figures.AbsFigure import AbsFigure
-from variables import ALOWED_COLORS
+from enums import Color
 
 
 class Player:
     def __init__(self,
+                 name: str,
                  clientSocket: Socket,
                  clientAdres: tuple[str, int],
-                 color: str) -> None:
+                 color: Color) -> None:
+        self.name: str
         self.socket: Socket
         self.adres: tuple[str, int]
         self.request: str
         self.readyForRecv: bool
-        self.color: str
         self.wasRokirovka: bool
-        self.score: int
+        self.color: Color
 
+        self.name = name
         self.socket = clientSocket
         self.adres = clientAdres
         self.request = ""
         self.readyForRecv = True
         self.wasRokirovka = False
-        self.score = 0
-        if color in ALOWED_COLORS:
-            self.color = color
-        else:
-            raise Exception(f"Invalid color: {color}")
+        self.color = color
 
     def doHod(self, board: Board) -> None:
         coords: list[str]
@@ -51,13 +48,14 @@ class Player:
 
     def __repr__(self) -> str:
         color: str
-        if self.color == "w":
+        if self.color == Color.WHITE:
             color = "белый"
         else:
             color = "чёрный"
-        return f"{color} игрок {self.adres}"
+        return f"{color} игрок {self.name} {self.adres}"
 
-    def toJson(self) -> dict[str, str | bool | tuple[str, int]]:
-        return {"adr": self.adres,
+    def toJson(self) -> dict[str, str | Color | bool | tuple[str, int]]:
+        return {"name": self.name,
+                "adr": self.adres,
                 "color": self.color,
                 "wasRokirovka": self.wasRokirovka}

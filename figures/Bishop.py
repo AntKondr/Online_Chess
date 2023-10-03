@@ -1,3 +1,4 @@
+from enums import Color
 from .AbsFigure import AbsFigure
 from .King import King
 
@@ -7,6 +8,8 @@ class Bishop(AbsFigure):
     _NAME: str = "сл"
     __MOVES: tuple[tuple[int, int], ...] = ((1, 1), (1, -1), (-1, -1), (-1, 1))
 
+    # TODO переписать метод как у Queen
+    # overrided
     def calcAvblCells(self, field: list[list[AbsFigure | None]]) -> None:
         yNextCell: int
         xNextCell: int
@@ -29,11 +32,14 @@ class Bishop(AbsFigure):
                                 self._doShah = True
                             break
                         else:
+                            fig._covered = True
                             break
                 else:
                     break
+        self._wasCalc = True
 
-    def toJson(self) -> dict[str, str | int]:
+    # overrided
+    def toJson(self) -> dict[str, str | Color | int]:
         return {"name": self._NAME,
                 "color": self._color,
                 "y": self._y,

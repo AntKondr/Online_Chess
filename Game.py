@@ -1,7 +1,7 @@
 from json import dumps
-from random import randint
 from Player import Player
 from Board import Board
+from enums import Color
 
 
 class Game:
@@ -22,12 +22,8 @@ class Game:
         self.blackPlayer = blackPlayer
         self.board = Board()
         self.delay = 0
-        if randint(0, 1) == 0:
-            self.activePlayer = self.whitePlayer
-            self.unActivePlayer = self.blackPlayer
-        else:
-            self.activePlayer = self.blackPlayer
-            self.unActivePlayer = self.whitePlayer
+        self.activePlayer = self.whitePlayer
+        self.unActivePlayer = self.blackPlayer
 
     def doHod(self) -> None:
         self.board.calcFigsState()
@@ -51,11 +47,11 @@ class Game:
              "board": self.board.toJson()}
         return dumps(d, indent=4)
 
-    def getStrRepr(self, color: str) -> str:
+    def getStrRepr(self, color: Color) -> str:
         field = self.board.getField()
         divider: str = "\n   -------------------------------------------------\n"
         out: str = f"Ходит {self.activePlayer}!\n\n"
-        if color == "w":
+        if color == Color.WHITE:
             charsW: str = "      a     b     c     d     e     f     g     h"
             out += (charsW + divider)
             for row in range(7, -1, -1):

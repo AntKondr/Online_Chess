@@ -1,43 +1,67 @@
 from __future__ import annotations
-from variables import ALOWED_COLORS
+from enums import Color
 
 
 class AbsFigure:
-    _NAME: str | None = None
+    _NAME: str
 
-    def __new__(cls, color: str, y: int, x: int):
+    def __new__(cls, color: Color, y: int, x: int):
         if cls is AbsFigure:
             raise Exception("Can't create obj of abstract class")
         else:
             return object.__new__(cls)
 
-    def __init__(self, color: str, y: int, x: int) -> None:
+    def __init__(self, color: Color, y: int, x: int) -> None:
+        # self._doShah - делает ли фигура шах
         self._doShah: bool
+
+        # self._wasCalc - были ли вычислены доступные ходы
+        self._wasCalc: bool
+
+        # self._covered - прикрыта ли фигура союзной фигурой
+        # (для того, чтоб недопустить срубание этой фигуры королём)
+        self._covered: bool
+
+        # self._coversKing - прикрывает ли фигура короля
+        self._coversKing: bool
+
         self._avblCellsForMove: list[tuple[int, int]]
         self._avblCellsForEat: list[tuple[int, int]]
-        self._color: str
+        self._color: Color
         self._y: int
         self._x: int
+        self._reprColor: str
 
         self._doShah = False
+        self._wasCalc = False
+        self._covered = False
+        self._coversKing = False
         self._avblCellsForMove = []
         self._avblCellsForEat = []
+        self._color = color
         self._y = y
         self._x = x
-        if color in ALOWED_COLORS:
-            self._color = color
+
+        if color == Color.WHITE:
+            self._reprColor = "w"
         else:
-            raise Exception(f"Invalid color: {color}")
+            self._reprColor = "b"
 
     def __repr__(self) -> str:
-        return f"{self._NAME}{self._color}"
+        return f"{self._NAME}{self._reprColor}"
 
-    def getColor(self) -> str:
+    def getColor(self) -> Color:
         return self._color
+
+    def wasCalc(self) -> bool:
+        return self._wasCalc
 
     def setNewCoords(self, y: int, x: int) -> None:
         self._y = y
         self._x = x
+
+    def getControlledCells(self) -> list[tuple[int, int]]:
+        return self._avblCellsForMove
 
     def getAvblCellsForMove(self) -> list[tuple[int, int]]:
         return self._avblCellsForMove
@@ -45,13 +69,21 @@ class AbsFigure:
     def getAvblCellsForEat(self) -> list[tuple[int, int]]:
         return self._avblCellsForEat
 
-    def resetState(self) -> None:
+    def clearState(self) -> None:
         self._avblCellsForMove.clear()
         self._avblCellsForEat.clear()
         self._doShah = False
+        self._wasCalc = False
+        self._covered = False
+        self._coversKing = False
 
     def calcAvblCells(self, field: list[list[AbsFigure | None]]) -> None:
         raise NotImplementedError
 
-    def toJson(self) -> dict[str, str | int | bool]:
+    def calcAvblCellsIfCoversKing(self,
+                                  field: list[list[AbsFigure | None]],
+                                  directions: tuple[tuple[int, int], tuple[int, int]]) -> None:
+        raise NotImplementedError
+
+    def toJson(self) -> dict[str, Color | str | int | bool]:
         raise NotImplementedError
