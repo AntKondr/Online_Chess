@@ -53,6 +53,9 @@ class AbsFigure:
     def getColor(self) -> Color:
         return self._color
 
+    def getCoords(self) -> tuple[int, int]:
+        return (self._y, self._x)
+
     def wasCalc(self) -> bool:
         return self._wasCalc
 

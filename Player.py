@@ -26,26 +26,29 @@ class Player:
         self.color = color
 
     def doHod(self, board: Board) -> None:
-        board.setFlagPawnWhoCanBeTakenOnPassToFalse(self.color)
-        coords: list[str]
+        # coords: list[str]
         coordsF: str
         coordsT: str
         # success: bool
+        board.setFlagPawnWhoCanBeTakenOnPassToFalse(self.color)
 
-        coords = self.request.split()
-        coordsF = coords[0]
-        # success = board.checkCoords(coordsF, self.color)
-        # while not success:
-        #     print("там пустая клетка или вражеская фигура или фигура ничего не может сделать!")
-        #     coordsF = input("введите координаты фигуры: ")
-        #     success = board.checkCoords(coordsF, self.color)
+        # coords = self.request.split()
+        # coordsF = coords[0]
+        coordsF = input("введите координаты фигуры: ")
+        success = board.checkCoords(coordsF, self.color)
+        while not success:
+            print("там пустая клетка или вражеская фигура или фигура ничего не может сделать!")
+            coordsF = input("введите координаты фигуры: ")
+            success = board.checkCoords(coordsF, self.color)
 
-        coordsT = coords[1]
+        # coordsT = coords[1]
+        coordsT = input("куда двигаем, координаты: ")
+        success = board.moveFigure(coordsF, coordsT)
+        while not success:
+            print("недопустимые координаты")
+            coordsT = input("куда двигаем, координаты: ")
+            success = board.moveFigure(coordsF, coordsT)
         board.moveFigure(coordsF, coordsT)
-        # while not success:
-        #     print("недопустимые координаты")
-        #     coordsT = input("куда двигаем, координаты: ")
-        #     success = board.moveFigure(coordsF, coordsT)
 
     def __repr__(self) -> str:
         color: str

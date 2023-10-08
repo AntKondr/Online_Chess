@@ -12,11 +12,15 @@ class Pawn(AbsFigure):
 
         self.__wasMoved: bool
         self.__canBeTakenOnPass: bool
+        self.__itWasTakeOnPass: bool
+        self.__coordsOfPawnForTakenOnPass: tuple[int, int] | None
         self.__yMove: tuple[int, int]
         self.__eatCells: tuple[tuple[int, int], tuple[int, int]]
 
         self.__wasMoved = False
         self.__canBeTakenOnPass = False
+        self.__itWasTakeOnPass = False
+        self.__coordsOfPawnForTakenOnPass = None
         if color == Color.WHITE:
             self.__yMove = (1, 0)
             self.__eatCells = ((1, -1), (1, 1))
@@ -28,16 +32,33 @@ class Pawn(AbsFigure):
     def setNewCoords(self, newY: int, newX: int) -> None:
         if abs(newY - self._y) == 2:
             self.__canBeTakenOnPass = True
+        else:
+            self.__canBeTakenOnPass = False
         self._y = newY
         self._x = newX
+        if not (self.__coordsOfPawnForTakenOnPass is None):
+            if (newY + (self.__yMove[0] * (-1)), newX) == self.__coordsOfPawnForTakenOnPass:
+                self.__itWasTakeOnPass = True
         if not self.__wasMoved:
             self.__wasMoved = True
+
+    def getCoordsOfPawnForTakenOnPass(self) -> tuple[int, int] | None:
+        return self.__coordsOfPawnForTakenOnPass
+
+    def setCoordsOfPawnForTakenOnPassToNone(self) -> None:
+        self.__coordsOfPawnForTakenOnPass = None
 
     def isCanBeTakenOnPass(self) -> bool:
         return self.__canBeTakenOnPass
 
-    def setFlagTakenOnPassToFalse(self) -> None:
+    def setFlagCanBeTakenOnPassToFalse(self) -> None:
         self.__canBeTakenOnPass = False
+
+    def itWasTakeOnPass(self) -> bool:
+        return self.__itWasTakeOnPass
+
+    def setFlagItWasTakeOnPassToFalse(self) -> None:
+        self.__itWasTakeOnPass = False
 
     # overrided
     def calcAvblCells(self, field: list[list[AbsFigure | None]]) -> None:
@@ -102,8 +123,9 @@ class Pawn(AbsFigure):
                         fig._covered = True
                 else:
                     fig = field[self._y][xt]
-                    if not (fig is None) and (type(fig) is Pawn) and self._color != fig._color and fig.__canBeTakenOnPass:
+                    if type(fig) is Pawn and self._color != fig._color and fig.__canBeTakenOnPass:
                         self._avblCellsForEat.append((yt, xt))
+                        self.__coordsOfPawnForTakenOnPass = (fig._y, fig._x)
 
     # overrided
     def getControlledCells(self) -> list[tuple[int, int]]:
