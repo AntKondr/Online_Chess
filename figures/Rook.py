@@ -16,9 +16,9 @@ class Rook(AbsFigure):
         self.__wasMoved = False
 
     # overrided
-    def setNewCoords(self, y: int, x: int) -> None:
-        self._y = y
-        self._x = x
+    def setNewCoords(self, newY: int, newX: int) -> None:
+        self._y = newY
+        self._x = newX
         if not self.__wasMoved:
             self.__wasMoved = True
 

@@ -26,6 +26,7 @@ class Player:
         self.color = color
 
     def doHod(self, board: Board) -> None:
+        board.setFlagPawnWhoCanBeTakenOnPassToFalse(self.color)
         coords: list[str]
         coordsF: str
         coordsT: str

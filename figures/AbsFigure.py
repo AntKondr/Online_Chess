@@ -56,9 +56,9 @@ class AbsFigure:
     def wasCalc(self) -> bool:
         return self._wasCalc
 
-    def setNewCoords(self, y: int, x: int) -> None:
-        self._y = y
-        self._x = x
+    def setNewCoords(self, newY: int, newX: int) -> None:
+        self._y = newY
+        self._x = newX
 
     def getControlledCells(self) -> list[tuple[int, int]]:
         return self._avblCellsForMove

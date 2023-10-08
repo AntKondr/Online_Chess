@@ -13,18 +13,20 @@ class Board:
 # {7: "a", 6: "b", 5: "c", 4: "d", 3: "e", 2: "f", 1: "g", 0: "h"}
 
     def __init__(self) -> None:
-        w = Color.WHITE
-        b = Color.BLACK
-
-        self.__field: list[list[AbsFigure | None]]
         self.whiteKing: King
         self.blackKing: King
+        self.pawnWhoCanBeTakenOnPass: Pawn | None
+        self.__field: list[list[AbsFigure | None]]
+
+        w: Color = Color.WHITE
+        b: Color = Color.BLACK
 
         self.whiteKing = King(w, 0, 3)
         self.blackKing = King(b, 7, 3)
-
         self.whiteKing.setEnemyKing(self.blackKing)
         self.blackKing.setEnemyKing(self.whiteKing)
+
+        self.pawnWhoCanBeTakenOnPass = None
 
         self.__field = [[Rook(w, 0, 0), Knight(w, 0, 1), Bishop(w, 0, 2), self.whiteKing, Queen(w, 0, 4), Bishop(w, 0, 5), Knight(w, 0, 6), Rook(w, 0, 7)],
                         [Pawn(w, 1, 0), Pawn(w, 1, 1), Pawn(w, 1, 2), Pawn(w, 1, 3), Pawn(w, 1, 4), Pawn(w, 1, 5), Pawn(w, 1, 6), Pawn(w, 1, 7)],
@@ -35,7 +37,7 @@ class Board:
                         [Pawn(b, 6, 0), Pawn(b, 6, 1), Pawn(b, 6, 2), Pawn(b, 6, 3), Pawn(b, 6, 4), Pawn(b, 6, 5), Pawn(b, 6, 6), Pawn(b, 6, 7)],
                         [Rook(b, 7, 0), Knight(b, 7, 1), Bishop(b, 7, 2), self.blackKing, Queen(b, 7, 4), Bishop(b, 7, 5), Knight(b, 7, 6), Rook(b, 7, 7)]]
 
-    def moveFigure(self, coordsF: str, coordsT: str) -> bool:
+    def moveFigure(self, coordsF: str, coordsT: str) -> None:
         fig: AbsFigure | None
 
         xF: int = Board.__XCOLS[coordsF[0]]
@@ -50,8 +52,15 @@ class Board:
             self.__field[yT][xT] = self.__field[yF][xF]
             self.__field[yF][xF] = None
             fig.setNewCoords(yT, xT)
-            return True
-        return False
+            # TODO
+            if type(fig) is Pawn and fig.isCanBeTakenOnPass():
+                self.pawnWhoCanBeTakenOnPass = fig
+
+    # TODO
+    def setFlagPawnWhoCanBeTakenOnPassToFalse(self, color: Color) -> None:
+        if not (self.pawnWhoCanBeTakenOnPass is None) and self.pawnWhoCanBeTakenOnPass.getColor() == color:
+            self.pawnWhoCanBeTakenOnPass.setFlagTakenOnPassToFalse()
+            self.pawnWhoCanBeTakenOnPass = None
 
     def clearFigsState(self) -> None:
         for row in self.__field:

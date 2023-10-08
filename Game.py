@@ -28,10 +28,10 @@ class Game:
     def doHod(self) -> None:
         self.board.calcFigsState()
         self.activePlayer.doHod(self.board)
-        self.changeActivePlayer()
+        self.__changeActivePlayer()
         self.board.clearFigsState()
 
-    def changeActivePlayer(self) -> None:
+    def __changeActivePlayer(self) -> None:
         if self.activePlayer is self.whitePlayer:
             self.activePlayer = self.blackPlayer
             self.unActivePlayer = self.whitePlayer
