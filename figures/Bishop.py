@@ -1,19 +1,19 @@
 from enums import Color
-from .AbsFigure import AbsFigure
+from .ABCFigure import ABCFigure
 from .King import King
 
 
-class Bishop(AbsFigure):
+class Bishop(ABCFigure):
     # слон: bishop
     _NAME: str = "сл"
     __MOVES: tuple[tuple[int, int], ...] = ((1, 1), (1, -1), (-1, -1), (-1, 1))
 
     # TODO переписать метод как у Queen
     # overrided
-    def calcAvblCells(self, field: list[list[AbsFigure | None]]) -> None:
+    def calcAvblCells(self, field: list[list[ABCFigure | None]]) -> None:
         yNextCell: int
         xNextCell: int
-        fig: AbsFigure | None
+        fig: ABCFigure | None
 
         for yMove, xMove in Bishop.__MOVES:
             yNextCell = self._y

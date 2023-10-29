@@ -1,5 +1,5 @@
 from enums import Color
-from figures.Bishop import AbsFigure
+from figures.ABCFigure import ABCFigure
 from figures.Bishop import Bishop
 from figures.King import King
 from figures.Knight import Knight
@@ -16,7 +16,7 @@ class Board:
         self.whiteKing: King
         self.blackKing: King
         self.pawnThatCanBeTakenOnPass: Pawn | None
-        self.__field: list[list[AbsFigure | None]]
+        self.__field: list[list[ABCFigure | None]]
 
         w: Color = Color.WHITE
         b: Color = Color.BLACK
@@ -38,7 +38,7 @@ class Board:
                         [Rook(b, 7, 0), Knight(b, 7, 1), Bishop(b, 7, 2), self.blackKing, Queen(b, 7, 4), Bishop(b, 7, 5), Knight(b, 7, 6), Rook(b, 7, 7)]]
 
     def moveFigure(self, coordsF: str, coordsT: str) -> bool:
-        fig: AbsFigure | None
+        fig: ABCFigure | None
 
         xF: int = Board.__XCOLS[coordsF[0]]
         yF: int = int(coordsF[1]) - 1
@@ -79,14 +79,14 @@ class Board:
         self.whiteKing.calcAvblCells(self.__field)
         self.blackKing.calcAvblCells(self.__field)
 
-    def getFigure(self, coords: str) -> AbsFigure | None:
+    def getFigure(self, coords: str) -> ABCFigure | None:
         # coords = f8
         x: int = Board.__XCOLS[coords[0]]
         y: int = int(coords[1]) - 1
         return self.__field[y][x]
 
     def checkCoords(self, coords: str, color: Color) -> bool:
-        fig: AbsFigure | None
+        fig: ABCFigure | None
 
         x: int = Board.__XCOLS[coords[0]]
         y: int = int(coords[1]) - 1
@@ -95,7 +95,7 @@ class Board:
             return False
         return True
 
-    def getField(self) -> list[list[AbsFigure | None]]:
+    def getField(self) -> list[list[ABCFigure | None]]:
         return self.__field
 
     def toJson(self) -> list[list[dict[str, str | Color | int | bool] | None]]:

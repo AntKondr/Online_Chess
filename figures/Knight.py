@@ -1,16 +1,16 @@
 from enums import Color
-from .AbsFigure import AbsFigure
+from .ABCFigure import ABCFigure
 from .King import King
 
 
-class Knight(AbsFigure):
+class Knight(ABCFigure):
     # конь: knight
     _NAME: str = "кн"
     __MOVES: tuple[tuple[int, int], ...] = ((-2, -1), (-2, 1), (-1, 2), (1, 2), (2, 1), (2, -1), (1, -2), (-1, -2))
 
     # overrided
-    def calcAvblCells(self, field: list[list[AbsFigure | None]]) -> None:
-        fig: AbsFigure | None
+    def calcAvblCells(self, field: list[list[ABCFigure | None]]) -> None:
+        fig: ABCFigure | None
         yt: int
         xt: int
 
@@ -34,7 +34,7 @@ class Knight(AbsFigure):
 
     # overrided
     def calcAvblCellsIfCoversKing(self,
-                                  field: list[list[AbsFigure | None]],
+                                  field: list[list[ABCFigure | None]],
                                   directions: tuple[tuple[int, int], tuple[int, int]]
                                   ) -> None:
         self._wasCalc = True

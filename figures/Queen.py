@@ -1,20 +1,20 @@
 from enums import Color
-from .AbsFigure import AbsFigure
+from .ABCFigure import ABCFigure
 from .King import King
 
 
-class Queen(AbsFigure):
+class Queen(ABCFigure):
     # ферзь: queen
     _NAME: str = "фр"
     __MOVES: tuple[tuple[int, int], ...] = ((1, 1), (1, -1), (-1, -1), (-1, 1), (-1, 0), (0, 1), (1, 0), (0, -1))
 
     # overrided
-    def calcAvblCells(self, field: list[list[AbsFigure | None]]) -> None:
+    def calcAvblCells(self, field: list[list[ABCFigure | None]]) -> None:
         yNextCell: int
         xNextCell: int
-        fig: AbsFigure | None
+        fig: ABCFigure | None
         enemyFigCount: int
-        enemyFigs: list[AbsFigure]
+        enemyFigs: list[ABCFigure]
 
         for yMove, xMove in Queen.__MOVES:
             yNextCell = self._y
@@ -57,12 +57,12 @@ class Queen(AbsFigure):
         self._wasCalc = True
 
     def calcAvblCellsIfCoversKing(self,
-                                  field: list[list[AbsFigure | None]],
+                                  field: list[list[ABCFigure | None]],
                                   directions: tuple[tuple[int, int], tuple[int, int]]
                                   ) -> None:
         yNextCell: int
         xNextCell: int
-        fig: AbsFigure | None
+        fig: ABCFigure | None
 
         for yMove, xMove in directions:
             yNextCell = self._y

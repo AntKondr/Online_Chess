@@ -1,15 +1,15 @@
 from enums import Color
-from .AbsFigure import AbsFigure
+from .ABCFigure import ABCFigure
 from .King import King
 
 
-class Rook(AbsFigure):
+class Rook(ABCFigure):
     # ладья: rook
     _NAME: str = "лд"
     __MOVES: tuple[tuple[int, int], ...] = ((-1, 0), (0, 1), (1, 0), (0, -1))
 
     def __init__(self, color: Color, y: int, x: int) -> None:
-        AbsFigure.__init__(self, color, y, x)
+        ABCFigure.__init__(self, color, y, x)
 
         self.__wasMoved: bool
 
@@ -24,10 +24,10 @@ class Rook(AbsFigure):
 
     # TODO переписать метод как у Queen
     # overrided
-    def calcAvblCells(self, field: list[list[AbsFigure | None]]) -> None:
+    def calcAvblCells(self, field: list[list[ABCFigure | None]]) -> None:
         yNextCell: int
         xNextCell: int
-        fig: AbsFigure | None
+        fig: ABCFigure | None
 
         for yMove, xMove in Rook.__MOVES:
             yNextCell = self._y

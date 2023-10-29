@@ -2,11 +2,11 @@ from __future__ import annotations
 from enums import Color
 
 
-class AbsFigure:
+class ABCFigure:
     _NAME: str
 
     def __new__(cls, color: Color, y: int, x: int):
-        if cls is AbsFigure:
+        if cls is ABCFigure:
             raise Exception("Can't create obj of abstract class")
         else:
             return object.__new__(cls)
@@ -80,11 +80,11 @@ class AbsFigure:
         self._covered = False
         self._coversKing = False
 
-    def calcAvblCells(self, field: list[list[AbsFigure | None]]) -> None:
+    def calcAvblCells(self, field: list[list[ABCFigure | None]]) -> None:
         raise NotImplementedError
 
     def calcAvblCellsIfCoversKing(self,
-                                  field: list[list[AbsFigure | None]],
+                                  field: list[list[ABCFigure | None]],
                                   directions: tuple[tuple[int, int], tuple[int, int]]) -> None:
         raise NotImplementedError
 

@@ -1,15 +1,15 @@
 from __future__ import annotations
 from enums import Color
-from .AbsFigure import AbsFigure
+from .ABCFigure import ABCFigure
 
 
-class King(AbsFigure):
+class King(ABCFigure):
     # король: king
     _NAME: str = "кр"
     __MOVES: tuple[tuple[int, int], ...] = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1))
 
     def __init__(self, color: Color, y: int, x: int) -> None:
-        AbsFigure.__init__(self, color, y, x)
+        ABCFigure.__init__(self, color, y, x)
 
         self.__wasMoved: bool
         self.underShah: bool
@@ -47,8 +47,8 @@ class King(AbsFigure):
         self.shahAmt = 0
 
     # overrided
-    def calcAvblCells(self, field: list[list[AbsFigure | None]]) -> None:
-        fig: AbsFigure | None
+    def calcAvblCells(self, field: list[list[ABCFigure | None]]) -> None:
+        fig: ABCFigure | None
         yt: int
         xt: int
         cellsUnderAttack: set[tuple[int, int]] = set()

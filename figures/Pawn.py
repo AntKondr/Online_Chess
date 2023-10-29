@@ -1,14 +1,14 @@
 from enums import Color
-from .AbsFigure import AbsFigure
+from .ABCFigure import ABCFigure
 from .King import King
 
 
-class Pawn(AbsFigure):
+class Pawn(ABCFigure):
     # пешка: pawn
     _NAME: str = "пш"
 
     def __init__(self, color: Color, y: int, x: int) -> None:
-        AbsFigure.__init__(self, color, y, x)
+        ABCFigure.__init__(self, color, y, x)
 
         self.__wasMoved: bool
         self.__canBeTakenOnPass: bool
@@ -61,14 +61,14 @@ class Pawn(AbsFigure):
         self.__itWasTakeOnPass = False
 
     # overrided
-    def calcAvblCells(self, field: list[list[AbsFigure | None]]) -> None:
+    def calcAvblCells(self, field: list[list[ABCFigure | None]]) -> None:
         self.__calcAvblCellsForMove(field)
         self.__calcAvblCellsForEat(field)
         self._wasCalc = True
 
     # overrided
     def calcAvblCellsIfCoversKing(self,
-                                  field: list[list[AbsFigure | None]],
+                                  field: list[list[ABCFigure | None]],
                                   directions: tuple[tuple[int, int], tuple[int, int]]
                                   ) -> None:
         for dir in directions:
@@ -88,7 +88,7 @@ class Pawn(AbsFigure):
                             fig._covered = True
         self._wasCalc = True
 
-    def __calcAvblCellsForMove(self, field: list[list[AbsFigure | None]]) -> None:
+    def __calcAvblCellsForMove(self, field: list[list[ABCFigure | None]]) -> None:
         yt: int
 
         if self.__wasMoved:
@@ -104,10 +104,10 @@ class Pawn(AbsFigure):
                         break
                     self._avblCellsForMove.append((yt, self._x))
 
-    def __calcAvblCellsForEat(self, field: list[list[AbsFigure | None]]) -> None:
+    def __calcAvblCellsForEat(self, field: list[list[ABCFigure | None]]) -> None:
         yt: int
         xt: int
-        fig: AbsFigure | None
+        fig: ABCFigure | None
 
         for ym, xm in self.__eatCells:
             yt = self._y + ym
