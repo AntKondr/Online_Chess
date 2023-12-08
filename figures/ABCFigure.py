@@ -1,15 +1,10 @@
 from __future__ import annotations
+from abc import ABC, abstractmethod
 from enums import Color
 
 
-class ABCFigure:
+class ABCFigure(ABC):
     _NAME: str
-
-    def __new__(cls, color: Color, y: int, x: int):
-        if cls is ABCFigure:
-            raise Exception("Can't create obj of abstract class")
-        else:
-            return object.__new__(cls)
 
     def __init__(self, color: Color, y: int, x: int) -> None:
         # self._doShah - делает ли фигура шах
@@ -80,13 +75,16 @@ class ABCFigure:
         self._covered = False
         self._coversKing = False
 
+    @abstractmethod
     def calcAvblCells(self, field: list[list[ABCFigure | None]]) -> None:
-        raise NotImplementedError
+        ...
 
+    @abstractmethod
     def calcAvblCellsIfCoversKing(self,
                                   field: list[list[ABCFigure | None]],
                                   directions: tuple[tuple[int, int], tuple[int, int]]) -> None:
-        raise NotImplementedError
+        ...
 
+    @abstractmethod
     def toJson(self) -> dict[str, Color | str | int | bool]:
-        raise NotImplementedError
+        ...

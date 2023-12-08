@@ -11,14 +11,16 @@ class King(ABCFigure):
     def __init__(self, color: Color, y: int, x: int) -> None:
         ABCFigure.__init__(self, color, y, x)
 
+        self.__enemyKing: King
         self.__wasMoved: bool
         self.underShah: bool
-        self.__enemyKing: King
         self.shahAmt: int
+        self.__shahDirections: list[tuple[int, int]]
 
         self.__wasMoved = False
         self.underShah = False
         self.shahAmt = 0
+        self.__shahDirections = []
 
     # overrided
     def setNewCoords(self, newY: int, newX: int) -> None:
@@ -43,6 +45,7 @@ class King(ABCFigure):
     def clearState(self) -> None:
         self._avblCellsForMove.clear()
         self._avblCellsForEat.clear()
+        self.__shahDirections.clear()
         self.underShah = False
         self.shahAmt = 0
 
@@ -67,7 +70,7 @@ class King(ABCFigure):
         for yMove, xMove in King.__MOVES:
             yt = self._y + yMove
             xt = self._x + xMove
-            if (-1 < yt < 8) and (-1 < xt < 8) and (not ((yt, xt) in cellsUnderAttack)):
+            if (-1 < yt < 8) and (-1 < xt < 8) and (not ((yt, xt) in cellsUnderAttack)) and (not ((yMove, xMove) in self.__shahDirections)):
                 fig = field[yt][xt]
                 if fig is None:
                     self._avblCellsForMove.append((yt, xt))
@@ -77,3 +80,19 @@ class King(ABCFigure):
                             self._avblCellsForEat.append((yt, xt))
                     else:
                         fig._covered = True
+
+    def addShahDirection(self, direction: tuple[int, int]) -> None:
+        self.__shahDirections.append(direction)
+
+    # overrided
+    def calcAvblCellsIfCoversKing(self,
+                                  field: list[list[ABCFigure | None]],
+                                  directions: tuple[tuple[int, int], tuple[int, int]]) -> None:
+        pass
+
+    # overrided
+    def toJson(self) -> dict[str, Color | str | int | bool]:
+        return {"name": self._NAME,
+                "color": self._color,
+                "y": self._y,
+                "x": self._x}
