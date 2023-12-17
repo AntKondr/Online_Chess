@@ -1,11 +1,11 @@
 from enums import Color
-from figures.ABCFigure import ABCFigure
-from figures.Bishop import Bishop
-from figures.King import King
-from figures.Knight import Knight
-from figures.Pawn import Pawn
-from figures.Queen import Queen
-from figures.Rook import Rook
+from figures import ABCFigure
+from figures import King
+from figures import Queen
+from figures import Bishop
+from figures import Rook
+from figures import Knight
+from figures import Pawn
 
 
 class Board:

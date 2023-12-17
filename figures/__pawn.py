@@ -1,6 +1,6 @@
 from enums import Color
-from .ABCFigure import ABCFigure
-from .King import King
+from .__ABCFigure import ABCFigure
+from .__king import King
 
 
 class Pawn(ABCFigure):

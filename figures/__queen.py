@@ -1,5 +1,5 @@
 from enums import Color
-from .ABCLinearFigure import ABCLinearFigure
+from .__ABCLinearFigure import ABCLinearFigure
 
 
 class Queen(ABCLinearFigure):

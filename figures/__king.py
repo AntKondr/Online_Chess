@@ -1,6 +1,6 @@
 from __future__ import annotations
 from enums import Color
-from .ABCFigure import ABCFigure
+from .__ABCFigure import ABCFigure
 
 
 class King(ABCFigure):
