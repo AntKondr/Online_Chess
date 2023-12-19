@@ -75,6 +75,9 @@ class ABCFigure(ABC):
         self._covered = False
         self._coversKing = False
 
+    def isRookAndNotWasMoved(self) -> bool:
+        return False
+
     @abstractmethod
     def calcAvblCells(self, field: list[list[ABCFigure | None]]) -> None:
         ...

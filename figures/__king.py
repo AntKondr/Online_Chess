@@ -7,6 +7,8 @@ class King(ABCFigure):
     # король: king
     _NAME: str = "кр"
     __MOVES: tuple[tuple[int, int], ...] = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1))
+    __SHORT_CASTLING_DIR: int = -1
+    __LONG_CASTLING_DIR: int = 1
 
     def __init__(self, color: Color, y: int, x: int) -> None:
         ABCFigure.__init__(self, color, y, x)
@@ -16,11 +18,19 @@ class King(ABCFigure):
         self.underShah: bool
         self.shahAmt: int
         self.__shahDirections: list[tuple[int, int]]
+        self.__shortCastlingCells: tuple[tuple[int, int], tuple[int, int]]
+        self.__longCastlingCells: tuple[tuple[int, int], tuple[int, int]]
 
         self.__wasMoved = False
         self.underShah = False
         self.shahAmt = 0
         self.__shahDirections = []
+
+        self.__shortCastlingCells = ((self._y, self._x + King.__SHORT_CASTLING_DIR),
+                                     (self._y, self._x + King.__SHORT_CASTLING_DIR * 2))
+
+        self.__longCastlingCells = ((self._y, self._x + King.__LONG_CASTLING_DIR),
+                                    (self._y, self._x + King.__LONG_CASTLING_DIR * 2))
 
     # overrided
     def setNewCoords(self, newY: int, newX: int) -> None:
@@ -32,7 +42,7 @@ class King(ABCFigure):
     def setEnemyKing(self, enemyKing: King) -> None:
         self.__enemyKing = enemyKing
 
-    def getAroundCoords(self) -> list[tuple[int, int]]:
+    def __getAroundCoords(self) -> list[tuple[int, int]]:
         aroundCoords: list[tuple[int, int]] = []
         for yMove, xMove in King.__MOVES:
             yt = self._y + yMove
@@ -64,7 +74,7 @@ class King(ABCFigure):
                     for coord in fig.getControlledCells():
                         cellsUnderAttack.add(coord)
 
-        for coord in self.__enemyKing.getAroundCoords():
+        for coord in self.__enemyKing.__getAroundCoords():
             cellsUnderAttack.add(coord)
 
         for yMove, xMove in King.__MOVES:
@@ -80,6 +90,55 @@ class King(ABCFigure):
                             self._avblCellsForEat.append((yt, xt))
                     else:
                         fig._covered = True
+
+        if not self.__wasMoved and not self.underShah:
+            shortRook: ABCFigure | None = field[self._y][0]
+            longRook: ABCFigure | None = field[self._y][7]
+
+            if not (shortRook is None) and shortRook.isRookAndNotWasMoved() and \
+               self.__cellsBetweenKingAndRookAreEmpty(King.__SHORT_CASTLING_DIR, field) and \
+               self.__castlingCellsNotUnderAttack(King.__SHORT_CASTLING_DIR, cellsUnderAttack):
+                self._avblCellsForMove.append(self.__shortCastlingCells[1])
+
+            if not (longRook is None) and longRook.isRookAndNotWasMoved() and \
+               self.__cellsBetweenKingAndRookAreEmpty(King.__LONG_CASTLING_DIR, field) and \
+               self.__castlingCellsNotUnderAttack(King.__LONG_CASTLING_DIR, cellsUnderAttack):
+                self._avblCellsForMove.append(self.__longCastlingCells[1])
+
+    def __cellsBetweenKingAndRookAreEmpty(self,
+                                          CastlingDirection: int,
+                                          field: list[list[ABCFigure | None]]) -> bool:
+        cell: ABCFigure | None
+
+        nextX: int = self._x + CastlingDirection
+        if CastlingDirection < 0:
+            while nextX > 0:
+                cell = field[self._y][nextX]
+                if not (cell is None):
+                    return False
+                nextX += CastlingDirection
+        else:
+            while nextX < 7:
+                cell = field[self._y][nextX]
+                if not (cell is None):
+                    return False
+                nextX += CastlingDirection
+
+        return True
+
+    def __castlingCellsNotUnderAttack(self,
+                                      CastlingDirection: int,
+                                      cellsUnderAttack: set[tuple[int, int]]) -> bool:
+        if CastlingDirection < 0:
+            for cell in self.__shortCastlingCells:
+                if cell in cellsUnderAttack:
+                    return False
+        else:
+            for cell in self.__longCastlingCells:
+                if cell in cellsUnderAttack:
+                    return False
+
+        return True
 
     def addShahDirection(self, direction: tuple[int, int]) -> None:
         self.__shahDirections.append(direction)

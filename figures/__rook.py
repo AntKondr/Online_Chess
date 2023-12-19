@@ -15,6 +15,10 @@ class Rook(ABCLinearFigure):
         self.__wasMoved = False
 
     # overrided
+    def isRookAndNotWasMoved(self) -> bool:
+        return not self.__wasMoved
+
+    # overrided
     def setNewCoords(self, newY: int, newX: int) -> None:
         self._y = newY
         self._x = newX
