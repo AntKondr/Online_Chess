@@ -29,8 +29,7 @@ class Player:
         # coords: list[str]
         coordsF: str
         coordsT: str
-        # success: bool
-        board.setFlagPawnWhoCanBeTakenOnPassToFalse(self.color)
+        success: bool
 
         # coords = self.request.split()
         # coordsF = coords[0]

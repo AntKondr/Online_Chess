@@ -12,41 +12,41 @@ class Pawn(ABCFigure):
 
         self.__wasMoved: bool
         self.__canBeTakenOnPass: bool
+        self.__canBeConverted: bool
         self.__itWasTakeOnPass: bool
         self.__coordsOfPawnForTakenOnPass: tuple[int, int] | None
         self.__yMove: tuple[int, int]
         self.__eatCells: tuple[tuple[int, int], tuple[int, int]]
+        self.__oppositeEdgeY: int
 
         self.__wasMoved = False
         self.__canBeTakenOnPass = False
+        self.__canBeConverted = False
         self.__itWasTakeOnPass = False
         self.__coordsOfPawnForTakenOnPass = None
         if color == Color.WHITE:
             self.__yMove = (1, 0)
             self.__eatCells = ((1, -1), (1, 1))
+            self.__oppositeEdgeY = 7
         else:
             self.__yMove = (-1, 0)
             self.__eatCells = ((-1, -1), (-1, 1))
+            self.__oppositeEdgeY = 0
 
     # overrided
     def setNewCoords(self, newY: int, newX: int) -> None:
-        if abs(newY - self._y) == 2:
-            self.__canBeTakenOnPass = True
-        else:
-            self.__canBeTakenOnPass = False
+        if newY == self.__oppositeEdgeY:
+            self.__canBeConverted = True
+        elif self.__coordsOfPawnForTakenOnPass == (newY - self.__yMove[0], newX):
+            self.__itWasTakeOnPass = True
+            self.__coordsOfPawnForTakenOnPass = None
+
+        if not self.__wasMoved:
+            if abs(newY - self._y) == 2:
+                self.__canBeTakenOnPass = True
+            self.__wasMoved = True
         self._y = newY
         self._x = newX
-        if not (self.__coordsOfPawnForTakenOnPass is None):
-            if (newY + (self.__yMove[0] * (-1)), newX) == self.__coordsOfPawnForTakenOnPass:
-                self.__itWasTakeOnPass = True
-        if not self.__wasMoved:
-            self.__wasMoved = True
-
-    def getCoordsOfPawnForTakenOnPass(self) -> tuple[int, int] | None:
-        return self.__coordsOfPawnForTakenOnPass
-
-    def setCoordsOfPawnForTakenOnPassToNone(self) -> None:
-        self.__coordsOfPawnForTakenOnPass = None
 
     def isCanBeTakenOnPass(self) -> bool:
         return self.__canBeTakenOnPass
@@ -59,6 +59,9 @@ class Pawn(ABCFigure):
 
     def setFlagItWasTakeOnPassToFalse(self) -> None:
         self.__itWasTakeOnPass = False
+
+    def isCanBeConverted(self) -> bool:
+        return self.__canBeConverted
 
     # overrided
     def calcAvblCells(self, field: list[list[ABCFigure | None]]) -> None:
@@ -74,12 +77,12 @@ class Pawn(ABCFigure):
         for dir in directions:
             if dir == self.__yMove:
                 self.__calcAvblCellsForMove(field)
-            if dir in self.__eatCells:
+            elif dir in self.__eatCells:
                 yt = self._y + dir[0]
                 xt = self._x + dir[1]
                 if (-1 < yt < 8) and (-1 < xt < 8):
                     fig = field[yt][xt]
-                    if not (fig is None):
+                    if fig:
                         if fig._color != self._color:
                             self._avblCellsForEat.append((yt, xt))
                             if type(fig) is King:
@@ -100,7 +103,7 @@ class Pawn(ABCFigure):
             for _ in range(2):
                 yt += self.__yMove[0]
                 if (-1 < yt < 8):
-                    if not (field[yt][self._x] is None):
+                    if field[yt][self._x]:
                         break
                     self._avblCellsForMove.append((yt, self._x))
 
@@ -114,11 +117,13 @@ class Pawn(ABCFigure):
             xt = self._x + xm
             if (-1 < yt < 8) and (-1 < xt < 8):
                 fig = field[yt][xt]
-                if not (fig is None):
+                if fig:
                     if fig._color != self._color:
                         self._avblCellsForEat.append((yt, xt))
                         if type(fig) is King:
                             self._doShah = True
+                            fig.underShah = True
+                            fig.shahAmt += 1
                     else:
                         fig._covered = True
                 else:
@@ -129,6 +134,9 @@ class Pawn(ABCFigure):
 
     # overrided
     def getControlledCells(self) -> list[tuple[int, int]]:
+        yt: int
+        xt: int
+
         result: list[tuple[int, int]] = []
         for ym, xm in self.__eatCells:
             yt = self._y + ym

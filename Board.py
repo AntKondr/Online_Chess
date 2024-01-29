@@ -48,24 +48,30 @@ class Board:
 
         fig = self.__field[yF][xF]
 
-        if not (fig is None) and (yT, xT) in fig.getAvblCellsForMove() + fig.getAvblCellsForEat():
+        if fig and (yT, xT) in fig.getAvblCellsForMove() + fig.getAvblCellsForEat():
             self.__field[yT][xT] = self.__field[yF][xF]
             self.__field[yF][xF] = None
             fig.setNewCoords(yT, xT)
             if type(fig) is Pawn:
                 if fig.isCanBeTakenOnPass():
+                    if self.pawnThatCanBeTakenOnPass:
+                        self.pawnThatCanBeTakenOnPass.setFlagCanBeTakenOnPassToFalse()
                     self.pawnThatCanBeTakenOnPass = fig
 
-                if fig.itWasTakeOnPass() and not (self.pawnThatCanBeTakenOnPass is None):
+                elif fig.itWasTakeOnPass() and self.pawnThatCanBeTakenOnPass:
                     y, x = self.pawnThatCanBeTakenOnPass.getCoords()
                     self.__field[y][x] = None
+                    self.pawnThatCanBeTakenOnPass = None
                     fig.setFlagItWasTakeOnPassToFalse()
-                    fig.setCoordsOfPawnForTakenOnPassToNone()
+
+                elif fig.isCanBeConverted():
+                    # make convertation
+                    input("pawn can be converted, press enter")
             return True
         return False
 
     def setFlagPawnWhoCanBeTakenOnPassToFalse(self, color: Color) -> None:
-        if not (self.pawnThatCanBeTakenOnPass is None) and self.pawnThatCanBeTakenOnPass.getColor() == color:
+        if self.pawnThatCanBeTakenOnPass and self.pawnThatCanBeTakenOnPass.getColor() == color:
             self.pawnThatCanBeTakenOnPass.setFlagCanBeTakenOnPassToFalse()
             self.pawnThatCanBeTakenOnPass = None
 

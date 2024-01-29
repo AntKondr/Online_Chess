@@ -27,6 +27,7 @@ class Game:
 
     def doHod(self) -> None:
         self.board.calcFigsState()
+        self.board.setFlagPawnWhoCanBeTakenOnPassToFalse(self.activePlayer.color)
         self.activePlayer.doHod(self.board)
         self.__changeActivePlayer()
         self.board.clearFigsState()
