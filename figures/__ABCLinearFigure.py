@@ -23,34 +23,31 @@ class ABCLinearFigure(ABCFigure):
                 xNextCell += xMove
                 if (-1 < yNextCell < 8) and (-1 < xNextCell < 8):
                     fig = field[yNextCell][xNextCell]
-                    if fig is None:
-                        if enemyFigCount == 0:
-                            self._avblCellsForMove.append((yNextCell, xNextCell))
-                    else:
+                    if fig:
                         if fig._color != self._color:
                             enemyFigCount += 1
                             enemyFigs.append(fig)
                             if enemyFigCount == 1:
                                 self._avblCellsForEat.append((yNextCell, xNextCell))
-                            if type(fig) is King:
-                                if enemyFigCount == 1:
+                                if type(fig) is King:
                                     self._doShah = True
                                     fig.underShah = True
                                     fig.shahAmt += 1
                                     fig.addShahDirection((yMove, xMove))
                                     fig.addShahDirection((yMove * -1, xMove * -1))
                                     break
-                                else:
+                            else:
+                                if type(fig) is King:
                                     enemyFigs[0].clearState()
                                     enemyFigs[0]._coversKing = True
                                     enemyFigs[0].calcAvblCellsIfCoversKing(field, ((yMove, xMove), (yMove * -1, xMove * -1)))
-                                    break
-                            if enemyFigCount == 2:
                                 break
                         else:
                             if enemyFigCount == 0:
                                 fig._covered = True
                             break
+                    elif enemyFigCount == 0:
+                        self._avblCellsForMove.append((yNextCell, xNextCell))
                 else:
                     break
         self._wasCalc = True
@@ -72,17 +69,11 @@ class ABCLinearFigure(ABCFigure):
                 while True:
                     yNextCell += yMove
                     xNextCell += xMove
-                    if (-1 < yNextCell < 8) and (-1 < xNextCell < 8):
-                        fig = field[yNextCell][xNextCell]
-                        if fig is None:
-                            self._avblCellsForMove.append((yNextCell, xNextCell))
-                        else:
-                            if fig._color != self._color:
-                                self._avblCellsForEat.append((yNextCell, xNextCell))
-                                break
-                            else:
-                                fig._covered = True
-                                break
-                    else:
+                    fig = field[yNextCell][xNextCell]
+                    if fig:
+                        if fig._color != self._color:
+                            self._avblCellsForEat.append((yNextCell, xNextCell))
                         break
+                    else:
+                        self._avblCellsForMove.append((yNextCell, xNextCell))
         self._wasCalc = True
