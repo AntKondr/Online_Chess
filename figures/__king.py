@@ -107,7 +107,8 @@ class King(ABCFigure):
 
     def __cellsBetweenKingAndRookAreEmpty(self,
                                           CastlingDirection: int,
-                                          field: list[list[ABCFigure | None]]) -> bool:
+                                          field: list[list[ABCFigure | None]]
+                                          ) -> bool:
         cell: ABCFigure | None
 
         nextX: int = self._x + CastlingDirection
@@ -128,7 +129,8 @@ class King(ABCFigure):
 
     def __castlingCellsNotUnderAttack(self,
                                       CastlingDirection: int,
-                                      cellsUnderAttack: set[tuple[int, int]]) -> bool:
+                                      cellsUnderAttack: set[tuple[int, int]]
+                                      ) -> bool:
         if CastlingDirection < 0:
             for cell in self.__shortCastlingCells:
                 if cell in cellsUnderAttack:
@@ -146,7 +148,8 @@ class King(ABCFigure):
     # overrided
     def calcAvblCellsIfCoversKing(self,
                                   field: list[list[ABCFigure | None]],
-                                  directions: tuple[tuple[int, int], tuple[int, int]]) -> None:
+                                  directions: tuple[tuple[int, int], tuple[int, int]]
+                                  ) -> None:
         pass
 
     # overrided

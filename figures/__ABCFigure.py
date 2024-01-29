@@ -85,7 +85,8 @@ class ABCFigure(ABC):
     @abstractmethod
     def calcAvblCellsIfCoversKing(self,
                                   field: list[list[ABCFigure | None]],
-                                  directions: tuple[tuple[int, int], tuple[int, int]]) -> None:
+                                  directions: tuple[tuple[int, int], tuple[int, int]]
+                                  ) -> None:
         ...
 
     @abstractmethod
