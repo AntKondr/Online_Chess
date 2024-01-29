@@ -77,18 +77,14 @@ class Pawn(ABCFigure):
         for dir in directions:
             if dir == self.__yMove:
                 self.__calcAvblCellsForMove(field)
+                break
             elif dir in self.__eatCells:
                 yt = self._y + dir[0]
                 xt = self._x + dir[1]
-                if (-1 < yt < 8) and (-1 < xt < 8):
-                    fig = field[yt][xt]
-                    if fig:
-                        if fig._color != self._color:
-                            self._avblCellsForEat.append((yt, xt))
-                            if type(fig) is King:
-                                self._doShah = True
-                        else:
-                            fig._covered = True
+                fig = field[yt][xt]
+                if fig:
+                    self._avblCellsForEat.append((yt, xt))
+                break
         self._wasCalc = True
 
     def __calcAvblCellsForMove(self, field: list[list[ABCFigure | None]]) -> None:
