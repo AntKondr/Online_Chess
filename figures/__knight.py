@@ -19,9 +19,7 @@ class Knight(ABCFigure):
             xt = self._x + xMove
             if (-1 < yt < 8) and (-1 < xt < 8):
                 fig = field[yt][xt]
-                if fig is None:
-                    self._avblCellsForMove.append((yt, xt))
-                else:
+                if fig:
                     if fig._color != self._color:
                         self._avblCellsForEat.append((yt, xt))
                         if type(fig) is King:
@@ -30,6 +28,8 @@ class Knight(ABCFigure):
                             fig.shahAmt += 1
                     else:
                         fig._covered = True
+                else:
+                    self._avblCellsForMove.append((yt, xt))
         self._wasCalc = True
 
     # overrided
