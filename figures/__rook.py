@@ -20,10 +20,10 @@ class Rook(ABCLinearFigure):
 
     # overrided
     def setNewCoords(self, newY: int, newX: int) -> None:
-        self._y = newY
-        self._x = newX
         if not self.__wasMoved:
             self.__wasMoved = True
+        self._y = newY
+        self._x = newX
 
     # overrided
     def toJson(self) -> dict[str, str | Color | int]:

@@ -31,8 +31,8 @@ class ABCLinearFigure(ABCFigure):
                                 self._avblCellsForEat.append((yNextCell, xNextCell))
                                 if type(fig) is King:
                                     self._doShah = True
-                                    fig.underShah = True
-                                    fig.shahAmt += 1
+                                    fig.setUnderShah()
+                                    fig.incrShahAmt()
                                     fig.addShahDirection((yMove, xMove))
                                     fig.addShahDirection((yMove * -1, xMove * -1))
                                     break

@@ -67,6 +67,22 @@ class Board:
                 elif fig.isCanBeConverted():
                     # make convertation
                     input("pawn can be converted, press enter")
+
+            elif type(fig) is King:
+                if fig.itWasLongCastling():
+                    rook: ABCFigure | None = self.__field[yT][7]
+                    self.__field[yT][xT - 1] = rook
+                    self.__field[yT][7] = None
+                    fig.resetItWasLongCastling()
+                    if rook:
+                        rook.setNewCoords(yT, xT - 1)
+                elif fig.itWasShortCastling():
+                    rook: ABCFigure | None = self.__field[yT][0]
+                    self.__field[yT][xT + 1] = rook
+                    self.__field[yT][0] = None
+                    fig.resetItWasShortCastling()
+                    if rook:
+                        rook.setNewCoords(yT, xT + 1)
             return True
         return False
 

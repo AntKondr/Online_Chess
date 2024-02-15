@@ -15,15 +15,19 @@ class King(ABCFigure):
 
         self.__enemyKing: King
         self.__wasMoved: bool
-        self.underShah: bool
-        self.shahAmt: int
+        self.__underShah: bool
+        self.__itWasLongCastling: bool
+        self.__itWasShortCastling: bool
+        self.__shahAmt: int
         self.__shahDirections: list[tuple[int, int]]
         self.__shortCastlingCells: tuple[tuple[int, int], tuple[int, int]]
         self.__longCastlingCells: tuple[tuple[int, int], tuple[int, int]]
 
         self.__wasMoved = False
-        self.underShah = False
-        self.shahAmt = 0
+        self.__underShah = False
+        self.__itWasLongCastling = False
+        self.__itWasShortCastling = False
+        self.__shahAmt = 0
         self.__shahDirections = []
 
         self.__shortCastlingCells = ((self._y, self._x + King.__SHORT_CASTLING_DIR),
@@ -34,10 +38,27 @@ class King(ABCFigure):
 
     # overrided
     def setNewCoords(self, newY: int, newX: int) -> None:
+        if not self.__wasMoved:
+            if newX - self._x == 2:
+                self.__itWasLongCastling = True
+            elif newX - self._x == -2:
+                self.__itWasShortCastling = True
+            self.__wasMoved = True
+
         self._y = newY
         self._x = newX
-        if not self.__wasMoved:
-            self.__wasMoved = True
+
+    def itWasLongCastling(self) -> bool:
+        return self.__itWasLongCastling
+
+    def itWasShortCastling(self) -> bool:
+        return self.__itWasShortCastling
+
+    def resetItWasLongCastling(self) -> None:
+        self.__itWasLongCastling = False
+
+    def resetItWasShortCastling(self) -> None:
+        self.__itWasShortCastling = False
 
     def setEnemyKing(self, enemyKing: King) -> None:
         self.__enemyKing = enemyKing
@@ -56,8 +77,15 @@ class King(ABCFigure):
         self._avblCellsForMove.clear()
         self._avblCellsForEat.clear()
         self.__shahDirections.clear()
-        self.underShah = False
-        self.shahAmt = 0
+        self.__underShah = False
+        self.__shahAmt = 0
+
+    def incrShahAmt(self) -> None:
+        self.__shahAmt += 1
+
+    def setUnderShah(self) -> None:
+        if not self.__underShah:
+            self.__underShah = True
 
     # overrided
     def calcAvblCells(self, field: list[list[ABCFigure | None]]) -> None:
@@ -68,7 +96,7 @@ class King(ABCFigure):
 
         for row in field:
             for fig in row:
-                if not (fig is None) and (fig._color != self._color) and not (type(fig) is King):
+                if fig and fig._color != self._color and not (type(fig) is King):
                     if not fig._wasCalc:
                         fig.calcAvblCells(field)
                     for coord in fig.getControlledCells():
@@ -82,28 +110,30 @@ class King(ABCFigure):
             xt = self._x + xMove
             if (-1 < yt < 8) and (-1 < xt < 8) and (not ((yt, xt) in cellsUnderAttack)) and (not ((yMove, xMove) in self.__shahDirections)):
                 fig = field[yt][xt]
-                if fig is None:
-                    self._avblCellsForMove.append((yt, xt))
-                else:
+                if fig:
                     if fig._color != self._color:
                         if not fig._covered:
                             self._avblCellsForEat.append((yt, xt))
                     else:
                         fig._covered = True
+                else:
+                    self._avblCellsForMove.append((yt, xt))
 
-        if not self.__wasMoved and not self.underShah:
+        if not self.__wasMoved and not self.__underShah:
             shortRook: ABCFigure | None = field[self._y][0]
             longRook: ABCFigure | None = field[self._y][7]
 
-            if not (shortRook is None) and shortRook.isRookAndNotWasMoved() and \
+            if shortRook and shortRook.isRookAndNotWasMoved() and \
                self.__cellsBetweenKingAndRookAreEmpty(King.__SHORT_CASTLING_DIR, field) and \
                self.__castlingCellsNotUnderAttack(King.__SHORT_CASTLING_DIR, cellsUnderAttack):
                 self._avblCellsForMove.append(self.__shortCastlingCells[1])
+                print(f"{self._reprColor} short castling avbl")
 
-            if not (longRook is None) and longRook.isRookAndNotWasMoved() and \
+            if longRook and longRook.isRookAndNotWasMoved() and \
                self.__cellsBetweenKingAndRookAreEmpty(King.__LONG_CASTLING_DIR, field) and \
                self.__castlingCellsNotUnderAttack(King.__LONG_CASTLING_DIR, cellsUnderAttack):
                 self._avblCellsForMove.append(self.__longCastlingCells[1])
+                print(f"{self._reprColor} long castling avbl")
 
     def __cellsBetweenKingAndRookAreEmpty(self,
                                           CastlingDirection: int,
@@ -115,13 +145,13 @@ class King(ABCFigure):
         if CastlingDirection < 0:
             while nextX > 0:
                 cell = field[self._y][nextX]
-                if not (cell is None):
+                if cell:
                     return False
                 nextX += CastlingDirection
         else:
             while nextX < 7:
                 cell = field[self._y][nextX]
-                if not (cell is None):
+                if cell:
                     return False
                 nextX += CastlingDirection
 

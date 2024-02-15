@@ -24,8 +24,8 @@ class Knight(ABCFigure):
                         self._avblCellsForEat.append((yt, xt))
                         if type(fig) is King:
                             self._doShah = True
-                            fig.underShah = True
-                            fig.shahAmt += 1
+                            fig.setUnderShah()
+                            fig.incrShahAmt()
                     else:
                         fig._covered = True
                 else:
